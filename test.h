@@ -8,9 +8,10 @@
 
 #ifndef TEST_H
 #define TEST_H
+
 #include <cppunit/extensions/HelperMacros.h>
 
-class Test: public CPPUNIT_NS::TestFixture {
+class Test:public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(Test);
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAddConversion);

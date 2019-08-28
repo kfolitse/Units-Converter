@@ -20,21 +20,19 @@
 #include <cppunit/TestFailure.h>
 #include <cppunit/portability/Stream.h>
 
+using namespace std;
+
 class ProgressListener : public CPPUNIT_NS::TestListener {
 public:
 
-    ProgressListener()
-    : m_lastTestFailed(false) {
-    }
+    ProgressListener(): m_lastTestFailed(false) {}
 
-    ~ProgressListener() {
-    }
+    ~ProgressListener() {}
 
     void startTest(CPPUNIT_NS::Test *test) {
         CPPUNIT_NS::stdCOut() << test->getName();
         CPPUNIT_NS::stdCOut() << "\n";
         CPPUNIT_NS::stdCOut().flush();
-
         m_lastTestFailed = false;
     }
 
@@ -61,6 +59,9 @@ private:
 };
 
 int main() {
+    
+    cout << " Lab 3:  Testing the UnitConverter " << endl;
+
     // Create the event manager and test controller
     CPPUNIT_NS::TestResult controller;
 

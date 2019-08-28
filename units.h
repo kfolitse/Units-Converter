@@ -13,18 +13,16 @@
  * an error message is display.
  *  
  ****************************************************************************/
+
 #ifndef UNITS_H
 #define UNITS_H
 
 #include <string>
-#include<vector>
+#include <vector>
+#include <set>
+
 using namespace std;
 
-/* 
- * Models an input value with unit 
- * Example: 23 km is models as UValue in(23,"km").
- * 
- */
 class UValue {
     public:
         /* 
@@ -50,9 +48,7 @@ class UValue {
         string units; /* unit in which value is expressed  */  
 };
 
-/*
- * Manages a collection of all known conversions type.
- */
+
 class UnitConverter{   
     /* Structure to stores a conversion type */
     struct Conversion {
@@ -61,12 +57,12 @@ class UnitConverter{
         string toUnits;
     };
     /* Vector of known conversion */
-    vector<Conversion> conversion; 
+    vector<Conversion> conversion;  
     
     public: 
-       UnitConverter();
-       ~UnitConverter();
-       
+        UnitConverter();
+        ~UnitConverter();
+
        /* 
         * Records a new conversion and its its inverse to the collection
         * Throws an invalid_argument exception if the conversion type is known.
@@ -74,9 +70,9 @@ class UnitConverter{
         * @param input value
         * @param unit to convert into
         */
-       void add_conversion(string from_units, double multiplier,
-                                   string to_units);
-       
+        void add_conversion(const string & from_units, const double multiplier, 
+                        const string &to_units); 
+
         /*
          * Converts value with unit into a given unit.
          * Throws an invalid argument exception when the conversion type does 
@@ -85,7 +81,11 @@ class UnitConverter{
          * @param  unit to convert into.
          * @return UValue object.
          */
-        UValue convert_to(UValue input, string to_units);      
+         UValue convert_to(UValue input,const  string & to_units,
+                        set<string>  seen_Units); 
+
+         /* Two argument convert_to function. */
+         UValue convert_to(UValue input, const string & to_units);
 };
 #endif /* UNITS_H */
 

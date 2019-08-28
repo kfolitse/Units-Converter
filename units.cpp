@@ -6,7 +6,8 @@
   * Build with: g++  -std=c++14 -Wall -Werror  -c -o units.o units.cpp
   * Modifications: 
   * 
-  **************************************************************************/
+  *****************************************************************************/
+
 #include "units.h"
 #include <stdexcept>
 #include <vector>
@@ -16,6 +17,7 @@
 
 using namespace std;
 
+
 UValue::UValue (double val, string uni) : value(val),units(uni) {
     this->value = val;
     this->units = uni;
@@ -23,39 +25,52 @@ UValue::UValue (double val, string uni) : value(val),units(uni) {
 
 UValue::~UValue (){}
 
-UnitConverter::UnitConverter (){} 
+UnitConverter::UnitConverter (){}
 
-UnitConverter::~UnitConverter (){}
+UnitConverter::~UnitConverter (){} 
 
-/* add_conversion implementation */
-void UnitConverter::add_conversion(string from_u, double mul, string to_u){
-
+/* Add conversion implementation. */
+void UnitConverter::add_conversion(const string & from_u, const double mul,
+        const string & to_u){
+    
     vector<Conversion>::iterator it;
     for (it = this->conversion.begin(); it != this->conversion.end();++it) {
-        if ((it->fromUnits == from_u) && (it->mutiplier == mul)
+        if ((it->fromUnits == from_u) && (it->mutiplier == mul) 
                 && (it->toUnits == to_u)){
-            string e = "Already have a conversion from" +  from_u +
-                    " to " + to_u;
-            /* Throw an exception if already conversion exists */
+            string e = "Already have a conversion from " +
+                    from_u + " to " + to_u;
             throw invalid_argument (e); 
         }
     }
     this->conversion.push_back({from_u, mul, to_u});
-    /* Also add the inverse of the conversion to the collection */
+    /* dd the inverse of the conversion {from_units,multiplier,to_units} */
     this->conversion.push_back({to_u, 1 / mul, from_u});  
 }
 
-/* Convert_to implementation */
- UValue UnitConverter::convert_to(UValue input, string to_units){
+ /* Recursive Convert_to implementation */
+ UValue UnitConverter::convert_to(UValue  input, const string & to_units, 
+         set<string>  seen){
      
-     vector<Conversion>::iterator it;            
-    for ( it = conversion.begin(); it != conversion.end();++it) {
-        if ((it->fromUnits == input.get_units()) && (it->toUnits == to_units)){
-            return UValue(it->mutiplier * input.get_value(),to_units);
-        }  
+     seen.insert(input.get_units());          
+    for (vector<Conversion>::iterator it = this->conversion.begin(); 
+            it != this->conversion.end();++it) {
+        if ((input.get_units() == it->fromUnits) && (to_units == it->toUnits)){
+            return UValue(it->mutiplier * input.get_value(),to_units);  
+        } else if ((input.get_units() == it->fromUnits) &&
+                seen.count(it->toUnits) == 0) {
+            try {
+                return convert_to(UValue(it->mutiplier * input.get_value(),
+                        it->toUnits),to_units, seen);
+            } catch (invalid_argument e) {}
+             
+        }    
     }
-    string s =  "Don't know how to convert from " +  
+    string s =  "Don't know how to convert from " + 
             input.get_units() + " to " + to_units ;
     throw invalid_argument (s);
-        
+ }
+ 
+/* Two-arguments UnitConverter Interface */
+ UValue UnitConverter::convert_to(UValue  input, const string & to_units) {
+     return convert_to(input, to_units,{});
  }

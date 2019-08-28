@@ -3,68 +3,81 @@
  * File: converter.cpp
  * Author: Amenyo Folitse
  * Purpose: Entry point of units.cpp .
- * Compilation: : 
+ * Compilation:
  * g++  -std=c++14 -Wall -Werror  matrix.cpp converter.cpp -o matrix  
  *
+ * Conversion are declared in a text file. The file name is passed to the
+ * program by command line.
  * 
  ****************************************************************************/
+
 
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include "units.h"
-using namespace std;
+#include <iostream>
+#include <fstream>
+#include <set>
 
+
+using namespace std;
 
 /*
  * Initialization function.
  * This is called by main function to create/initialize
- * the collection of possible conversion type.
+ * the collection/vector of possible conversion type.
  */
 UnitConverter converterUnit(){
 
     UnitConverter u;
-    u.add_conversion("mi",1.6,"km");
-    u.add_conversion ("mi",5280, "ft");
-
-    u.add_conversion ( "ft", 12, "in");
-    u.add_conversion ("in", 2.54, "cm");
-    u.add_conversion("lb",0.45,"kg");
-    u.add_conversion("stone",14,"lb");
-    u.add_conversion("lb",1000,"g");
-    u.add_conversion("gal", 3.79, "L");
-    u.add_conversion("bushel",9.3,"gal");
-    u.add_conversion("ft^3",7.5,"gal");
-    u.add_conversion("L",1000,"ml");
-
-    return u;
+    
+    string file, fromUnits, toUnits;
+    double multiplier;
+    cout << "Enter file name: " << endl;
+    cin >> file;
+    
+   ifstream ifile(file);    
+   if (!ifile.is_open()) {
+       string s =  "File does not exist ";
+       throw invalid_argument (s);
+   }
+   
+    while (ifile >> fromUnits >> multiplier >> toUnits){
+        u.add_conversion (fromUnits ,multiplier, toUnits);
+   }
+   ifile.close();
+   
+   return u;
 }
-
 
 int main(int argc, char** argv) {
 
     string fromUnits,toUnits;
     double fromValue;
-    cout << "Enter value with units: " << endl;
-    cin >> fromValue;
-    cin >> fromUnits;
+    std::cout << "Enter value with units: " << endl;
+    std::cin >> fromValue;
+    std::cin >> fromUnits;
   
-    cout << "Convert to units: " << endl;
-    cin >> toUnits;
+    std::cout << "Convert to units: " << endl;
+    std::cin >> toUnits;
   
     // Initialize the collection of known conversion.
-    UnitConverter u = converterUnit();
-    
-    // Create an object Uvalue;
-    UValue input = UValue(fromValue,fromUnits);
-    
+    UnitConverter u;
+    set<string> s;
     try {
-        UValue output = u.convert_to(input, toUnits);
-        cout << "Converted to: " << output.get_value() << " " << output.get_units() << endl;
+        u = converterUnit();
+            // Create an object Uvalue;
+        UValue input = UValue(fromValue,fromUnits);
+        UValue output = u.convert_to(input, toUnits,s);
+        std::cout << "Converted to: " << output.get_value() << " " << output.get_units() << endl;
+    
     } catch (invalid_argument e){
-        cout << "Couldn't convert to " << toUnits << "!" <<endl;
-        cout << e.what() << endl;
+        std::cout << "Couldn't convert to " << toUnits << "!" <<endl;
+        std::cout << e.what() << endl;
+     
     }
-
+    
     return 0;
 }
+
