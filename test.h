@@ -2,40 +2,33 @@
  * 
  * File: test.h
  * Author: Amenyo Folitse
- * Purpose: Test class declaration that tests units.cpp
+ * Purpose: Test class that tests units.cpp
  *  
  ****************************************************************************/
+
 #ifndef TEST_H
 #define TEST_H
-
-#include <iostream>
-#include <set>
-#include <string>
-#include <cmath>
-
-using namespace std;
-
 #include <cppunit/extensions/HelperMacros.h>
 
-class TestContext : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(TestContext);
+class Test: public CPPUNIT_NS::TestFixture {
+    CPPUNIT_TEST_SUITE(Test);
     CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testConvert_to);
+    CPPUNIT_TEST(testAddConversion);
+    CPPUNIT_TEST(testConvertTo);
+
     CPPUNIT_TEST_SUITE_END();
 
 public:
-    TestContext();
-    virtual ~TestContext();
+    Test();
+    virtual ~Test();
     void setUp();
     void tearDown();
-    
+
 private:
     void testConstructor();
-    void testConvert_to();
-    
+    void testAddConversion();
+    void testConvertTo ();
 };
 
-
 #endif /* TEST_H */
-
 

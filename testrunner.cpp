@@ -1,17 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   testrunner.cpp
- * Author: kfolitse
+/**************************************************************************
  * 
- * Created on Aug. 13, 2019, 11:05:58 p.m.
- */
-
-// CppUnit site http://sourceforge.net/projects/cppunit/files
+ * File: testrunner.cpp
+ * Author: Amenyo Folitse
+ * Created on: 
+ * Purpose: Entry point of test.cpp test.
+ * Compiliation: 
+ * g++ -std=c++14 -Wall -Werror  -c -o units.o test.cpp testrunner.cpp
+ *  
+ ****************************************************************************/
 
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>

@@ -1,57 +1,70 @@
-/*****************************************************************************
- * File: test.cpp
- * Author : Amenyo K. Folitse
- * Description: Tests UValue class and its basic arithmetic operations.
- * 
- *****************************************************************************/
-#include "test.h"
+ /* ***********************************************************************
+  * 
+  * File: units.cpp
+  * Author: Amenyo Folitse
+  * Created on: 
+  * Purpose: Test suite implementation. This file tests units.cpp
+  * 
+  * Build with: g++ -std=c++14 -Wall -Werror  -c -o units.o test.cpp
+  * 
+  **************************************************************************/
 #include "units.h"
-CPPUNIT_TEST_SUITE_REGISTRATION(TestContext);
+#include "test.h"
+CPPUNIT_TEST_SUITE_REGISTRATION(Test);
 
-TestContext::TestContext() {}
+Test::Test() {}
+Test::~Test() {}
+void Test::setUp() {}
+void Test::tearDown() {}
 
-TestContext::~TestContext() {}
-
-void TestContext::setUp() {}
-
-void TestContext::tearDown() {}
-
-/* Test the constructor */
-void TestContext::testConstructor() {
+/* Tests the UValue constructor.*/
+void Test::testConstructor(){
     UValue input(12 , "mi");
-    CPPUNIT_ASSERT(input.get_value() == 12);
-    string fromUnit = input.get_units();
-    CPPUNIT_ASSERT(fromUnit == "mi");
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(12,input.get_value(),1e-10);
+    CPPUNIT_ASSERT(input.get_units() == "mi");
+}
+/* Tests the add_conversion */
+void Test::testAddConversion(){
+    UnitConverter u;
+    u.add_conversion("mi", 1.6, "km");
+    u.add_conversion("lb", 1000, "gal");
+       
+    try {
+        /* 1 km = 1000 m already recorded. */ 
+        /* Expected exception of type invalid_argument.*/
+        CPPUNIT_ASSERT_THROW(u.add_conversion("mi", 1.6, "km"),
+                std::invalid_argument); 
+    } catch (...) {
+        CPPUNIT_ASSERT(false);
+    }
 }
 
-/* Tests conversion between different units */
-void TestContext::testConvert_to(){
+/* Tests the convert_to function  */
+void Test::testConvertTo (){
     
-    // Create UValue object
-    UValue input1(34,"gal");
-    UValue input2(15,"mi");
-    UValue input3(4,"lb");
+    /* Test conversion operations  */
+    UnitConverter u;
+    u.add_conversion("mi", 1.6, "km"); // 1 mi = 1.6 km
+    UValue out(0, "invalid");
 
-    // do few conversion
-    UValue out1 = convert_to(input1,"L");
-    UValue out2 = convert_to(input2,"km");
-    UValue out3 = convert_to(input3,"kg");
+    out = u.convert_to(UValue(3,"mi"),"km");
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.8,out.get_value(),1e-10);
+    CPPUNIT_ASSERT("km" == out.get_units());
 
-    /* Check the expected value and units */
-    CPPUNIT_ASSERT_EQUAL(128.86,out1.get_value());
-    CPPUNIT_ASSERT("L" == out1.get_units());
-
-    CPPUNIT_ASSERT_EQUAL(24.0,out2.get_value());
-    CPPUNIT_ASSERT("km" == out2.get_units());
-
-    CPPUNIT_ASSERT_EQUAL(1.8,out3.get_value());
-    CPPUNIT_ASSERT("kg" == out3.get_units());
+    out = u.convert_to(UValue(15,"km"),"mi");
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(9.375,out.get_value(),1e-10);
+    CPPUNIT_ASSERT("mi" == out.get_units());
     
-    // Attempt a conversion that does not exist
-    UValue input4(10,"ft");
-    UValue out4 = convert_to(input4,"L");
-    CPPUNIT_ASSERT_EQUAL (10.0, out4.get_value());
-    CPPUNIT_ASSERT("ft" == out4.get_units());
-    
+    /* Doesn't recognize a conversion type.*/
+    try {
+        /* Should not be able to convert from gal to L.*/ 
+        /* Expected exception of type invalid_argument */
+       CPPUNIT_ASSERT_THROW(u.convert_to(UValue(2,"gal"),"L"),
+               std::invalid_argument ); 
+    }
+    catch (...) {
+        CPPUNIT_ASSERT(false); // Wrong Exception type.
+    } 
 }
+
 

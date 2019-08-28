@@ -16,6 +16,31 @@
 using namespace std;
 
 
+/*
+ * Initialization function.
+ * This is called by main function to create/initialize
+ * the collection of possible conversion type.
+ */
+UnitConverter converterUnit(){
+
+    UnitConverter u;
+    u.add_conversion("mi",1.6,"km");
+    u.add_conversion ("mi",5280, "ft");
+
+    u.add_conversion ( "ft", 12, "in");
+    u.add_conversion ("in", 2.54, "cm");
+    u.add_conversion("lb",0.45,"kg");
+    u.add_conversion("stone",14,"lb");
+    u.add_conversion("lb",1000,"g");
+    u.add_conversion("gal", 3.79, "L");
+    u.add_conversion("bushel",9.3,"gal");
+    u.add_conversion("ft^3",7.5,"gal");
+    u.add_conversion("L",1000,"ml");
+
+    return u;
+}
+
+
 int main(int argc, char** argv) {
 
     string fromUnits,toUnits;
@@ -23,24 +48,23 @@ int main(int argc, char** argv) {
     cout << "Enter value with units: " << endl;
     cin >> fromValue;
     cin >> fromUnits;
-    
-    UValue input(fromValue,fromUnits);
-    
-    // Enter the unit to convert to
+  
     cout << "Convert to units: " << endl;
     cin >> toUnits;
+  
+    // Initialize the collection of known conversion.
+    UnitConverter u = converterUnit();
     
-    UValue output = convert_to(input,toUnits);
+    // Create an object Uvalue;
+    UValue input = UValue(fromValue,fromUnits);
     
-    // Check results
-    if (output.get_units() == toUnits) {
+    try {
+        UValue output = u.convert_to(input, toUnits);
         cout << "Converted to: " << output.get_value() << " " << output.get_units() << endl;
-    
-    } else {
-        cout << "Couldn't convert to " << toUnits <<"!"<< endl;
+    } catch (invalid_argument e){
+        cout << "Couldn't convert to " << toUnits << "!" <<endl;
+        cout << e.what() << endl;
     }
-    
+
     return 0;
 }
-
-
